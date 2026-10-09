@@ -10,6 +10,387 @@ create table if not exists public.members (
  phone text default '' check(char_length(phone) <= 40),
  active boolean not null default true,
  created_at timestamptz not null default now()
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Louvor Central</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+ --orange:#ff7900;--black:#171717;--bg:#f5f5f5;
+ --white:#fff;--gray:#777;--line:#e9e9e9;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--black)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;background:#171717;color:white;padding:26px 15px;position:fixed;inset:0 auto 0 0}
+.logo{font-size:24px;font-weight:800;padding:10px 14px 36px}
+.logo span{color:var(--orange)}
+.nav{width:100%;text-align:left;border:0;background:none;color:#aaa;padding:15px;border-radius:10px;margin-bottom:6px}
+.nav:hover,.nav.active{background:#333;color:white}
+.nav.active{border-left:4px solid var(--orange)}
+.main{margin-left:245px;padding:34px;flex:1;min-width:0}
+.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}
+h1{font-size:29px;margin:0 0 9px}
+h2{font-size:19px;margin:0}
+p{color:var(--gray);line-height:1.6}
+.primary{background:var(--orange);color:white;border:0;padding:12px 18px;border-radius:9px;font-weight:bold}
+.secondary{background:#eee;color:#222;border:0;padding:10px 14px;border-radius:8px}
+.danger{background:#fff1f1;color:#b42318;border:0;padding:9px;border-radius:8px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin:25px 0}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:23px}
+.card small{color:var(--gray)}
+.card strong{display:block;font-size:35px;margin-top:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.panel{margin-bottom:18px}
+.panel h2{margin-bottom:17px}
+.item{border-bottom:1px solid var(--line);padding:15px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.item:last-child{border:0}
+.item strong{display:block;margin-bottom:6px}
+.item small{color:var(--gray)}
+.actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.tag{display:inline-block;background:#fff1e4;color:#d75d00;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:bold}
+.muted{color:var(--gray)}
+.empty{text-align:center;padding:35px;color:var(--gray)}
+input,select,textarea{width:100%;border:1px solid #ddd;border-radius:9px;padding:12px;background:white;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--orange)}
+label{font-size:13px;font-weight:600;display:block;margin:13px 0 6px}
+textarea{min-height:90px}
+.form-actions{display:flex;gap:10px;margin-top:20px}
+.modal-bg{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal{background:white;padding:27px;border-radius:17px;width:100%;max-width:510px;max-height:90vh;overflow:auto}
+.modal h2{margin-bottom:22px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.link{color:var(--orange);text-decoration:none;font-weight:bold;font-size:13px}
+.notice{background:#fff3e8;padding:15px;border-left:4px solid var(--orange);border-radius:7px;margin-bottom:18px}
+.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}
+#status{font-size:12px;color:#999}
+@media(max-width:800px){
+ .app{display:block}.sidebar{position:static;width:100%;padding:15px}
+ .logo{padding:8px 5px 16px}
+ .menu{display:flex;overflow:auto;gap:5px}
+ .nav{white-space:nowrap;width:auto;margin:0;padding:12px}
+ .main{margin:0;padding:20px 14px}
+ .cards{grid-template-columns:1fr 1fr}
+ .grid{grid-template-columns:1fr}
+ .header{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:440px){
+ .cards{grid-template-columns:1fr}
+ .two{grid-template-columns:1fr}
+ .item{align-items:flex-start}
+ .actions{justify-content:flex-end}
+}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside class="sidebar">
+  <div class="logo">LOUVOR<span>CENTRAL.</span></div>
+  <div class="menu">
+   <button class="nav active" onclick="go('dashboard',this)">◫ Visão geral</button>
+   <button class="nav" onclick="go('services',this)">▦ Cultos e escalas</button>
+   <button class="nav" onclick="go('songs',this)">♫ Repertório</button>
+   <button class="nav" onclick="go('members',this)">♙ Integrantes</button>
+  </div>
+ </aside>
+ <main class="main">
+  <div class="topline"><span class="tag">MINISTÉRIO DE LOUVOR</span><span id="status">Conectando...</span></div>
+  <div id="content"></div>
+ </main>
+</div>
+<div id="modalroot"></div>
+
+<script>
+// CONFIGURAÇÃO SUPABASE
+// Substitua os dois valores abaixo.
+const SUPABASE_URL = "COLE_AQUI_URL_SUPABASE";
+const SUPABASE_KEY = "COLE_AQUI_CHAVE_PUBLICAVEL";
+
+const configured = SUPABASE_URL.startsWith("https://")
+ && !SUPABASE_KEY.startsWith("COLE_AQUI");
+
+const db = configured
+ ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
+ : null;
+
+let page="dashboard",selectedService=null;
+let members=[],songs=[],services=[],serviceMembers=[],serviceSongs=[];
+const el=id=>document.getElementById(id);
+const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+const today=()=>new Date().toLocaleDateString("en-CA");
+const dateText=s=>s?new Date(s+"T12:00:00").toLocaleDateString("pt-BR"):"";
+const songBy=id=>songs.find(x=>x.id===id);
+const memberBy=id=>members.find(x=>x.id===id);
+const nextCult=()=>[...services].filter(x=>x.service_date>=today())
+ .sort((a,b)=>a.service_date.localeCompare(b.service_date))[0];
+function header(title,desc,action="",button=""){
+ return `<div class="header"><div><h1>${title}</h1><p>${desc}</p></div>
+ ${action?`<button class="primary" onclick="${action}">${button}</button>`:""}</div>`;
+}
+function empty(msg){return `<div class="empty">${msg}</div>`}
+function go(p,btn){
+ page=p;selectedService=null;
+ document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ render();
+}
+function render(){
+ let html="";
+ if(!configured){
+  el("content").innerHTML=header("Configure o Supabase","Conecte o banco para começar")
+   +`<div class="notice">Preencha SUPABASE_URL e SUPABASE_KEY no início do JavaScript.
+   Execute também o SQL das tabelas no seu projeto Supabase.</div>`;
+  el("status").textContent="Não configurado";
+  return;
+ }
+ if(page==="dashboard")html=dashboard();
+ if(page==="members")html=membersPage();
+ if(page==="songs")html=songsPage();
+ if(page==="services")html=servicesPage();
+ el("content").innerHTML=html;
+}
+function dashboard(){
+ const upcoming=nextCult();
+ const assigned=upcoming?serviceMembers.filter(x=>x.service_id===upcoming.id):[];
+ const playlist=upcoming?serviceSongs.filter(x=>x.service_id===upcoming.id).sort((a,b)=>a.position-b.position):[];
+ return header("Visão geral","Tudo o que a equipe precisa para o próximo culto.")
+ +`<div class="cards">
+ <div class="card"><small>Integrantes</small><strong>${members.length}</strong></div>
+ <div class="card"><small>Músicas cadastradas</small><strong>${songs.length}</strong></div>
+ <div class="card"><small>Cultos programados</small><strong>${services.filter(x=>x.service_date>=today()).length}</strong></div>
+ </div>
+ <div class="grid">
+ <section class="panel"><h2>Próximo culto</h2>
+ ${upcoming?`<h2>${safe(upcoming.title)}</h2>
+ <p>${dateText(upcoming.service_date)} • ${safe(upcoming.service_time||"")}
+ <br>${safe(upcoming.location||"")}</p>
+ <button class="primary" onclick="openService('${upcoming.id}')">Ver planejamento</button>`
+ :empty("Nenhum culto futuro cadastrado.")}</section>
+ <section class="panel"><h2>Equipe escalada</h2>
+ ${assigned.length?assigned.map(x=>`<div class="item"><div><strong>${safe(memberBy(x.member_id)?.name||"Integrante")}</strong><small>${safe(x.function_name||"Equipe")}</small></div></div>`).join("")
+ :empty("Nenhum integrante escalado para o próximo culto.")}</section>
+ </div>
+ <section class="panel"><h2>Sequência de músicas do próximo culto</h2>
+ ${playlist.length?playlist.map((x,i)=>{
+ const s=songBy(x.song_id);
+ return `<div class="item"><div><strong>${i+1}. ${safe(s?.title||"Música")}</strong><small>${safe(s?.artist||"")} • Tom: ${safe(x.chosen_key||s?.song_key||"-")}</small></div></div>`;
+ }).join(""):empty("Nenhuma música definida ainda.")}</section>`;
+}
+function membersPage(){
+ return header("Integrantes","Organize os músicos, vocalistas e responsáveis.","memberModal()","+ Novo integrante")
+ +`<section class="panel">${members.length?members.map(x=>`
+ <div class="item"><div><strong>${safe(x.name)}</strong><small>${safe(x.role)} • ${x.active?"Ativo":"Inativo"}</small></div>
+ <div class="actions"><button class="secondary" onclick="memberModal('${x.id}')">Editar</button>
+ <button class="danger" onclick="removeRow('members','${x.id}')">Excluir</button></div></div>`).join("")
+ :empty("Cadastre o primeiro integrante da equipe.")}</section>`;
+}
+function songsPage(){
+ return header("Repertório","Músicas, tons e referências organizados.","songModal()","+ Nova música")
+ +`<section class="panel">${songs.length?songs.map(x=>`
+ <div class="item"><div><strong>${safe(x.title)}</strong>
+ <small>${safe(x.artist||"Sem artista")} • Tom: ${safe(x.song_key||"-")} ${x.bpm?"• "+x.bpm+" BPM":""}</small>
+ <div style="margin-top:9px">${link(x.youtube_url,"Ouvir música")} ${link(x.chords_url,"Ver cifra")}</div></div>
+ <div class="actions"><button class="secondary" onclick="songModal('${x.id}')">Editar</button>
+ <button class="danger" onclick="removeRow('songs','${x.id}')">Excluir</button></div></div>`).join("")
+ :empty("Adicione as músicas do ministério.")}</section>`;
+}
+function link(url,label){
+ try{
+  const u=new URL(url);
+  if(!["http:","https:"].includes(u.protocol))return "";
+  return `<a class="link" target="_blank" rel="noopener noreferrer" href="${safe(u.href)}">${label} ↗</a> &nbsp;`;
+ }catch{return ""}
+}
+function servicesPage(){
+ if(selectedService)return serviceDetail();
+ return header("Cultos e escalas","Planeje as próximas celebrações.","serviceModal()","+ Novo culto")
+ +`<section class="panel">${services.length?[...services]
+ .sort((a,b)=>b.service_date.localeCompare(a.service_date)).map(x=>`
+ <div class="item"><div><strong>${safe(x.title)}</strong><small>${dateText(x.service_date)} • ${safe(x.service_time||"")}</small></div>
+ <div class="actions"><button class="primary" onclick="openService('${x.id}')">Abrir</button>
+ <button class="secondary" onclick="serviceModal('${x.id}')">Editar</button>
+ <button class="danger" onclick="removeRow('services','${x.id}')">Excluir</button></div></div>`).join("")
+ :empty("Nenhum culto cadastrado.")}</section>`;
+}
+function openService(id){
+ selectedService=id;page="services";render();
+}
+function serviceDetail(){
+ const c=services.find(x=>x.id===selectedService);
+ if(!c){selectedService=null;return servicesPage()}
+ const team=serviceMembers.filter(x=>x.service_id===c.id);
+ const tracks=serviceSongs.filter(x=>x.service_id===c.id).sort((a,b)=>a.position-b.position);
+ return `<button class="secondary" onclick="selectedService=null;render()">← Voltar</button>
+ <div style="height:20px"></div>
+ ${header(safe(c.title),dateText(c.service_date)+" • "+safe(c.service_time||""))}
+ ${c.notes?`<div class="notice">${safe(c.notes)}</div>`:""}
+ <div class="grid">
+ <section class="panel"><div class="topline"><h2>Equipe escalada</h2>
+ <button class="primary" onclick="assignModal()">+ Escalar</button></div>
+ ${team.length?team.map(x=>`<div class="item">
+ <div><strong>${safe(memberBy(x.member_id)?.name||"Integrante")}</strong><small>${safe(x.function_name)}</small></div>
+ <button class="danger" onclick="removeAssignment('${x.member_id}')">Remover</button></div>`).join("")
+ :empty("Nenhum integrante escalado.")}</section>
+ <section class="panel"><div class="topline"><h2>Sequência musical</h2>
+ <button class="primary" onclick="trackModal()">+ Música</button></div>
+ ${tracks.length?tracks.map((x,i)=>{
+ const s=songBy(x.song_id);
+ return `<div class="item"><div><strong>${i+1}. ${safe(s?.title||"Música")}</strong>
+ <small>Tom: ${safe(x.chosen_key||s?.song_key||"-")}</small>
+ <div style="margin-top:7px">${link(s?.youtube_url,"Ouvir")} ${link(s?.chords_url,"Cifra")}</div>
+ ${x.notes?`<p>${safe(x.notes)}</p>`:""}</div>
+ <div class="actions"><button class="secondary" onclick="editTrack('${x.id}')">Tom</button>
+ <button class="danger" onclick="removeRow('service_songs','${x.id}')">×</button></div></div>`;
+ }).join(""):empty("Selecione as músicas do culto.")}</section></div>`;
+}
+function showModal(title,fields,submit){
+ el("modalroot").innerHTML=`<div class="modal-bg" id="backdrop">
+ <div class="modal"><h2>${title}</h2><form id="editForm">${fields}
+ <div class="form-actions"><button class="primary" type="submit">Salvar</button>
+ <button class="secondary" type="button" onclick="closeModal()">Cancelar</button></div></form></div></div>`;
+ el("backdrop").addEventListener("click",e=>{if(e.target.id==="backdrop")closeModal()});
+ el("editForm").onsubmit=async e=>{
+  e.preventDefault();
+  const data=Object.fromEntries(new FormData(e.target).entries());
+  try{await submit(data);closeModal();await load()}
+  catch(err){alert("Erro ao salvar: "+err.message)}
+ };
+}
+function closeModal(){el("modalroot").innerHTML=""}
+function field(label,name,value="",type="text",required=false){
+ return `<label>${label}</label><input name="${name}" type="${type}" value="${safe(value)}" ${required?"required":""}>`;
+}
+function area(label,name,value=""){
+ return `<label>${label}</label><textarea name="${name}">${safe(value)}</textarea>`;
+}
+function choice(label,name,options,selected=""){
+ return `<label>${label}</label><select name="${name}">`+options.map(x=>
+ `<option value="${safe(x[0])}" ${String(x[0])===String(selected)?"selected":""}>${safe(x[1])}</option>`).join("")+"</select>";
+}
+async function save(table,data,id){
+ const q=id?db.from(table).update(data).eq("id",id):db.from(table).insert(data);
+ const {error}=await q;
+ if(error)throw error;
+}
+function memberModal(id){
+ const m=members.find(x=>x.id===id);
+ showModal(m?"Editar integrante":"Novo integrante",
+ field("Nome","name",m?.name,"text",true)
+ +field("Função principal","role",m?.role||"Vocal","text",true)
+ +choice("Situação","active",[["true","Ativo"],["false","Inativo"]],String(m?.active??true)),
+ d=>save("members",{name:d.name,role:d.role,active:d.active==="true"},id));
+}
+function songModal(id){
+ const s=songs.find(x=>x.id===id);
+ showModal(s?"Editar música":"Nova música",
+ field("Nome da música","title",s?.title,"text",true)
+ +field("Cantor ou ministério","artist",s?.artist)
+ +field("Tom original","song_key",s?.song_key)
+ +field("BPM","bpm",s?.bpm||"","number")
+ +field("Link do YouTube","youtube_url",s?.youtube_url,"url")
+ +field("Link da cifra","chords_url",s?.chords_url,"url")
+ +area("Observações","notes",s?.notes),
+ d=>save("songs",{...d,bpm:d.bpm?Number(d.bpm):null},id));
+}
+function serviceModal(id){
+ const c=services.find(x=>x.id===id);
+ showModal(c?"Editar culto":"Novo culto",
+ field("Título do culto","title",c?.title||"Culto de Louvor","text",true)
+ +field("Data","service_date",c?.service_date||today(),"date",true)
+ +field("Horário","service_time",c?.service_time||"19:00","time",true)
+ +field("Local","location",c?.location)
+ +area("Observações","notes",c?.notes),
+ d=>save("services",d,id));
+}
+function assignModal(){
+ const available=members.filter(m=>m.active&&!serviceMembers.some(x=>x.service_id===selectedService&&x.member_id===m.id));
+ if(!available.length){alert("Cadastre integrantes disponíveis primeiro.");return}
+ showModal("Escalar integrante",
+ choice("Integrante","member_id",available.map(x=>[x.id,x.name]))
+ +field("Função neste culto","function_name","Vocal","text",true),
+ async d=>{
+  const {error}=await db.from("service_members").insert({...d,service_id:selectedService});
+  if(error)throw error;
+ });
+}
+function trackModal(){
+ const available=songs.filter(s=>!serviceSongs.some(x=>x.service_id===selectedService&&x.song_id===s.id));
+ if(!available.length){alert("Cadastre músicas disponíveis primeiro.");return}
+ showModal("Adicionar música ao culto",
+ choice("Música","song_id",available.map(x=>[x.id,x.title]))
+ +field("Tom neste culto","chosen_key")
+ +area("Observações","notes"),
+ async d=>{
+  const current=serviceSongs.filter(x=>x.service_id===selectedService);
+  const max=Math.max(0,...current.map(x=>x.position));
+  const {error}=await db.from("service_songs").insert({...d,
+   service_id:selectedService,position:max+1});
+  if(error)throw error;
+ });
+}
+function editTrack(id){
+ const t=serviceSongs.find(x=>x.id===id);
+ if(!t)return;
+ showModal("Editar tom e observações",
+ field("Tom neste culto","chosen_key",t.chosen_key)
+ +area("Observações","notes",t.notes),
+ d=>save("service_songs",d,id));
+}
+async function removeRow(table,id){
+ if(!confirm("Tem certeza que deseja excluir?"))return;
+ try{
+  const {error}=await db.from(table).delete().eq("id",id);
+  if(error)throw error;
+  if(table==="services")selectedService=null;
+  await load();
+ }catch(e){alert("Erro: "+e.message)}
+}
+async function removeAssignment(id){
+ if(!confirm("Remover integrante desta escala?"))return;
+ try{
+  const {error}=await db.from("service_members").delete()
+   .eq("service_id",selectedService).eq("member_id",id);
+  if(error)throw error;
+  await load();
+ }catch(e){alert("Erro: "+e.message)}
+}
+async function load(){
+ if(!db){render();return}
+ const tables=["members","songs","services","service_members","service_songs"];
+ try{
+  const results=await Promise.all(tables.map(t=>db.from(t).select("*")));
+  const error=results.find(r=>r.error)?.error;
+  if(error)throw error;
+  [members,songs,services,serviceMembers,serviceSongs]=results.map(r=>r.data||[]);
+  el("status").textContent="● Conectado";
+  render();
+ }catch(e){
+  el("status").textContent="Erro na conexão";
+  el("content").innerHTML=`<div class="notice">Não foi possível carregar os dados: ${safe(e.message)}</div>`;
+ }
+}
+if(db){
+ db.channel("louvor-central-atualizacoes")
+ .on("postgres_changes",{event:"*",schema:"public"},()=>{
+  if(!el("editForm"))load();
+ }).subscribe();
+ document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden&&!el("editForm"))load();
+ });
+ setInterval(()=>{if(!document.hidden&&!el("editForm"))load()},30000);
+}
+load();
+</script>
+</body>
+</html>
+
 );
 create table if not exists public.songs (
  id uuid primary key default gen_random_uuid(),
