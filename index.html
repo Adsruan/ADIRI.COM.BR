@@ -1,381 +1,109 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#171717"><meta name="description" content="Escalas, repertório e programação do Ministério de Louvor.">
 <title>Louvor Central</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.0/dist/umd/supabase.min.js"></script>
-<style>
-:root{
- --orange:#ff7900;--black:#171717;--bg:#f5f5f5;
- --white:#fff;--gray:#777;--line:#e9e9e9;
-}
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--black)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.app{display:flex;min-height:100vh}
-.sidebar{width:245px;background:#171717;color:white;padding:26px 15px;position:fixed;inset:0 auto 0 0}
-.logo{font-size:24px;font-weight:800;padding:10px 14px 36px}
-.logo span{color:var(--orange)}
-.nav{width:100%;text-align:left;border:0;background:none;color:#aaa;padding:15px;border-radius:10px;margin-bottom:6px}
-.nav:hover,.nav.active{background:#333;color:white}
-.nav.active{border-left:4px solid var(--orange)}
-.main{margin-left:245px;padding:34px;flex:1;min-width:0}
-.header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:25px}
-h1{font-size:29px;margin:0 0 9px}
-h2{font-size:19px;margin:0}
-p{color:var(--gray);line-height:1.6}
-.primary{background:var(--orange);color:white;border:0;padding:12px 18px;border-radius:9px;font-weight:bold}
-.secondary{background:#eee;color:#222;border:0;padding:10px 14px;border-radius:8px}
-.danger{background:#fff1f1;color:#b42318;border:0;padding:9px;border-radius:8px}
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin:25px 0}
-.card,.panel{background:white;border:1px solid var(--line);border-radius:15px;padding:23px}
-.card small{color:var(--gray)}
-.card strong{display:block;font-size:35px;margin-top:14px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.panel{margin-bottom:18px}
-.panel h2{margin-bottom:17px}
-.item{border-bottom:1px solid var(--line);padding:15px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.item:last-child{border:0}
-.item strong{display:block;margin-bottom:6px}
-.item small{color:var(--gray)}
-.actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
-.tag{display:inline-block;background:#fff1e4;color:#d75d00;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:bold}
-.muted{color:var(--gray)}
-.empty{text-align:center;padding:35px;color:var(--gray)}
-input,select,textarea{width:100%;border:1px solid #ddd;border-radius:9px;padding:12px;background:white;outline:none}
-input:focus,textarea:focus,select:focus{border-color:var(--orange)}
-label{font-size:13px;font-weight:600;display:block;margin:13px 0 6px}
-textarea{min-height:90px}
-.form-actions{display:flex;gap:10px;margin-top:20px}
-.modal-bg{position:fixed;inset:0;background:#0009;display:flex;align-items:center;justify-content:center;padding:18px;z-index:50}
-.modal{background:white;padding:27px;border-radius:17px;width:100%;max-width:510px;max-height:90vh;overflow:auto}
-.modal h2{margin-bottom:22px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.link{color:var(--orange);text-decoration:none;font-weight:bold;font-size:13px}
-.notice{background:#fff3e8;padding:15px;border-left:4px solid var(--orange);border-radius:7px;margin-bottom:18px}
-.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:20px}
-#status{font-size:12px;color:#999}
-@media(max-width:800px){
- .app{display:block}.sidebar{position:static;width:100%;padding:15px}
- .logo{padding:8px 5px 16px}
- .menu{display:flex;overflow:auto;gap:5px}
- .nav{white-space:nowrap;width:auto;margin:0;padding:12px}
- .main{margin:0;padding:20px 14px}
- .cards{grid-template-columns:1fr 1fr}
- .grid{grid-template-columns:1fr}
- .header{align-items:flex-start;flex-direction:column}
-}
-@media(max-width:440px){
- .cards{grid-template-columns:1fr}
- .two{grid-template-columns:1fr}
- .item{align-items:flex-start}
- .actions{justify-content:flex-end}
-}
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%23171717%22%2F%3E%3Cpath%20d%3D%22M18%2016v32h28v-8H26V16z%22%20fill%3D%22%23ff7900%22%2F%3E%3Ccircle%20cx%3D%2244%22%20cy%3D%2221%22%20r%3D%227%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E%0A" type="image/svg+xml"><style>:root{--orange:#ff7900;--ink:#171717;--muted:#666;--line:#e5e5e5;--paper:#f6f6f6;--white:#fff;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--paper);font-synthesis:none}*{box-sizing:border-box}body{margin:0;font-size:16px}button,input,select,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.5}a{color:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #ff7900;outline-offset:3px}.skip{position:fixed;top:-80px;z-index:100;background:#fff;padding:12px}.skip:focus{top:10px}.sidebar{width:250px;position:fixed;inset:0 auto 0 0;background:var(--ink);color:#fff;padding:36px 22px;display:flex;flex-direction:column}.brand{display:flex;gap:13px;align-items:center;text-decoration:none;font-size:17px;letter-spacing:.12em;line-height:1.35}.brand b{color:var(--orange)}.brand-mark{font-size:26px;letter-spacing:-.1em;border:1px solid #4b4b4b;border-radius:12px;padding:12px 8px}.brand-mark span{color:var(--orange)}.nav-label,.eyebrow{font-size:11px;font-weight:700;letter-spacing:.13em}.nav-label{color:#aaa;margin:52px 12px 18px}nav{display:grid;gap:8px}nav button{border:0;background:none;color:#bbb;padding:15px 12px;border-radius:9px;text-align:left;font-size:14px;display:flex;align-items:center;gap:13px}nav button span{font-size:21px;width:22px}nav button:hover{background:#272727}nav button.active{color:#fff;background:#323232;box-shadow:inset 3px 0 var(--orange)}.sidebar-foot{margin-top:auto;padding:35px 10px 0}.sidebar-foot .eyebrow{color:#999;font-size:10px}.sidebar-foot p{font-size:20px;line-height:1.5;font-weight:500}.editor-button{border:1px solid #575757;border-radius:8px;color:white;background:transparent;padding:11px 12px;font-size:13px;width:100%;margin:8px 0 12px}.sidebar-foot small{font-size:12px;color:#aaa;display:block;overflow-wrap:anywhere}main{margin-left:250px;padding:0 42px;max-width:1700px}.topbar{height:88px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;font-size:11px;letter-spacing:.05em;color:#777}.topbar b{color:#333}.topbar>div{display:flex;align-items:center;gap:12px}#status{font-size:12px;letter-spacing:0}.icon-button{background:none;border:1px solid var(--line);border-radius:8px;min-width:36px;min-height:36px;font-size:21px}#content{padding:35px 0 28px;min-height:calc(100vh - 150px)}.page-head{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:28px}.page-head h1{font-size:32px;letter-spacing:-.04em;margin:0 0 10px}.page-head p{color:var(--muted);margin:0;line-height:1.6;font-size:14px}.primary,.secondary,.danger{border:0;border-radius:8px;padding:12px 16px;font-size:14px;font-weight:650;min-height:42px}.primary{background:var(--orange);color:#171717}.primary:hover{background:#ee7000}.secondary{background:#ededed;color:#333}.danger{background:#fff0ee;color:#ac2c20}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:26px}.stat{border:1px solid var(--line);border-radius:12px;background:white;padding:21px 23px;display:flex;justify-content:space-between;align-items:center;gap:12px}.stat small{font-size:13px;color:var(--muted)}.stat strong{display:block;font-size:30px;letter-spacing:-.04em;margin-top:8px}.stat-icon{font-size:25px;background:#fff2e7;color:#a94f00;width:45px;height:45px;display:grid;place-items:center;border-radius:12px}.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,1fr);gap:22px}.panel{border:1px solid var(--line);border-radius:14px;background:white;padding:24px;margin-bottom:22px;min-width:0}.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.panel h2{font-size:17px;letter-spacing:-.02em;margin:0}.hero{background:var(--ink);color:white;border:0;position:relative;padding:30px;overflow:hidden}.hero .eyebrow{color:var(--orange)}.hero h2{font-size:30px;margin:21px 0 16px;letter-spacing:-.035em}.hero p{color:#c5c5c5;font-size:14px;line-height:1.9;margin:10px 0 25px}.hero .date-block{float:right;border:1px solid #565656;border-radius:12px;text-align:center;padding:12px 18px;margin-left:10px}.date-block b{display:block;font-size:32px}.date-block span{font-size:12px;text-transform:uppercase}.pill{background:#f2f2f2;color:#666;font-size:11px;border-radius:5px;padding:5px 8px;white-space:nowrap}.pill.orange{background:#fff0e2;color:#914200}.item{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:17px 0;border-bottom:1px solid #eee;min-width:0}.item:last-child{border-bottom:0}.item-main{display:flex;align-items:center;gap:13px;min-width:0}.item strong{font-size:14px;display:block;margin-bottom:6px;overflow-wrap:anywhere}.item small{font-size:13px;color:#727272;line-height:1.6}.item p{font-size:13px;white-space:pre-wrap;color:#666;line-height:1.6;margin:8px 0}.avatar,.track-number{flex-shrink:0;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#f1f1f1;color:#555;font-size:12px;font-weight:700}.track-number{border-radius:8px;color:#a84e00;background:#fff2e8;font-size:14px}.actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}.actions button{padding:8px 10px;font-size:12px;min-height:36px}.empty{padding:28px 10px;color:#727272;font-size:14px;line-height:1.8;text-align:center}.hero .empty{color:#ccc;text-align:left;padding:5px 0 12px}.text-link{border:0;background:none;color:#974800;font-weight:650;font-size:13px;text-decoration:none;padding:6px 0;display:inline-block;margin-right:14px}.search{max-width:440px;position:relative;margin:0 0 24px}.search input{padding:13px 15px}.catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.song-card{margin:0}.song-card h2{font-size:18px;margin:12px 0 8px}.song-card p{color:#777;font-size:13px;line-height:1.6;white-space:pre-wrap}.song-card .panel-head{margin:0}.song-card .actions{border-top:1px solid var(--line);padding-top:15px;margin-top:16px;justify-content:space-between}.notice{background:#fff0df;border:1px solid #ffd3a9;padding:15px 18px;border-radius:9px;font-size:14px;line-height:1.7;margin-top:20px}.notice.error{background:#fff2f0;border-color:#f2c4bc;color:#9c2e22}.notice button{margin-left:12px}.details-meta{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;color:#666;margin-bottom:24px}.two-columns{display:grid;grid-template-columns:1fr 1.25fr;gap:22px}.notes{white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.8}.loading{padding:70px 20px;text-align:center;color:#777}footer{display:flex;justify-content:space-between;border-top:1px solid var(--line);padding:22px 0;color:#929292;font-size:10px;letter-spacing:.1em}footer span{letter-spacing:0;font-size:11px}dialog{border:0;padding:28px;border-radius:16px;width:min(530px,calc(100vw - 28px));max-height:90vh;box-shadow:0 20px 90px #0003}dialog::backdrop{background:#17171799;backdrop-filter:blur(3px)}.modal-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px}.modal-heading h2{font-size:21px;margin:0}label{display:block;font-size:14px;font-weight:600;margin:16px 0 7px}input,select,textarea{width:100%;background:white;border:1px solid #d9d9d9;border-radius:8px;padding:12px;color:#222;min-height:45px}textarea{min-height:90px;resize:vertical}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:25px}#form-error{color:#a5291d;font-size:14px;line-height:1.6}#toast{position:fixed;bottom:22px;left:calc(50% + 125px);transform:translateX(-50%);background:#171717;color:white;padding:14px 22px;border-radius:10px;box-shadow:0 5px 30px #0003;z-index:20;font-size:14px;max-width:90vw}body:has(dialog[open]){overflow:hidden}[hidden]{display:none!important}
+@media(min-width:1600px){main{padding:0 65px}}@media(max-width:1100px){.sidebar{width:220px;padding:28px 16px}main{margin-left:220px;padding:0 26px}.dashboard-grid,.two-columns{grid-template-columns:1fr}.catalog{grid-template-columns:1fr}.stats{gap:10px}.stat{padding:17px}.stat-icon{display:none}#toast{left:calc(50% + 110px)}}@media(max-width:760px){.sidebar{position:static;width:100%;padding:20px 18px 12px}.brand{font-size:13px}.brand-mark{font-size:21px;padding:8px}.nav-label,.sidebar-foot p,.sidebar-foot .eyebrow,.sidebar-foot small{display:none}.sidebar-foot{position:absolute;top:20px;right:18px;padding:0}.editor-button{width:auto;margin:0;font-size:12px}.sidebar nav{display:flex;gap:4px;margin-top:20px;justify-content:space-between}nav button{font-size:11px;padding:10px 8px;gap:5px}nav button span{font-size:16px;width:16px}nav button.active{box-shadow:inset 0 -2px var(--orange)}main{margin-left:0;padding:0 18px}.topbar{height:64px;font-size:10px}.topbar>div{gap:7px}#status{font-size:11px}#content{padding-top:25px}.page-head{align-items:flex-start;gap:12px;flex-wrap:wrap}.page-head h1{font-size:28px}.page-head p{font-size:13px}.page-head .primary{font-size:12px;padding:10px 13px}.stats{gap:8px}.stat{padding:14px 11px}.stat small{font-size:11px}.stat strong{font-size:26px}.panel{padding:19px}.hero{padding:24px}.hero h2{font-size:27px}.item{flex-wrap:wrap}.item>.actions{margin-left:auto}.panel-head{flex-wrap:wrap}.two-columns{gap:0}.dashboard-grid{gap:0}footer span{display:none}#toast{left:50%;bottom:14px}.date-block{padding:10px!important}.catalog{gap:14px}dialog{padding:22px}input,select,textarea{font-size:16px}}
+@media(prefers-reduced-motion:no-preference){button{transition:background .15s,opacity .15s}.panel{animation:appear .2s ease-out}@keyframes appear{from{opacity:.5;transform:translateY(3px)}to{opacity:1;transform:none}}}
+
+.detail-spacer{height:20px}
 </style>
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
-<div class="app">
- <aside class="sidebar">
-  <div class="logo">LOUVOR<span>CENTRAL.</span></div>
-  <div class="menu">
-   <button class="nav active" onclick="go('dashboard',this)">◫ Visão geral</button>
-   <button class="nav" onclick="go('services',this)">▦ Cultos e escalas</button>
-   <button class="nav" onclick="go('songs',this)">♫ Repertório</button>
-   <button class="nav" onclick="go('members',this)">♙ Integrantes</button>
-  </div>
- </aside>
- <main class="main">
-  <div class="topline"><span class="tag">MINISTÉRIO DE LOUVOR</span><span id="status">Conectando...</span></div>
-  <div id="content"></div>
- </main>
-</div>
-<div id="modalroot"></div>
-
-<script>
-// CONFIGURAÇÃO SUPABASE
-// Substitua os dois valores abaixo.
-const SUPABASE_URL = "COLE_AQUI_URL_SUPABASE";
-const SUPABASE_KEY = "COLE_AQUI_CHAVE_PUBLICAVEL";
-
-const configured = SUPABASE_URL.startsWith("https://")
- && !SUPABASE_KEY.startsWith("COLE_AQUI");
-
-const db = configured
- ? window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY)
- : null;
-
-let page="dashboard",selectedService=null;
-let members=[],songs=[],services=[],serviceMembers=[],serviceSongs=[];
-const el=id=>document.getElementById(id);
-const safe=s=>String(s??"").replace(/[&<>"']/g,c=>({
- "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-}[c]));
-const today=()=>new Date().toLocaleDateString("en-CA");
-const dateText=s=>s?new Date(s+"T12:00:00").toLocaleDateString("pt-BR"):"";
-const songBy=id=>songs.find(x=>x.id===id);
-const memberBy=id=>members.find(x=>x.id===id);
-const nextCult=()=>[...services].filter(x=>x.service_date>=today())
- .sort((a,b)=>a.service_date.localeCompare(b.service_date))[0];
-function header(title,desc,action="",button=""){
- return `<div class="header"><div><h1>${title}</h1><p>${desc}</p></div>
- ${action?`<button class="primary" onclick="${action}">${button}</button>`:""}</div>`;
-}
-function empty(msg){return `<div class="empty">${msg}</div>`}
-function go(p,btn){
- page=p;selectedService=null;
- document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));
- if(btn)btn.classList.add("active");
- render();
-}
+<a class="skip" href="#content">Ir ao conteúdo</a>
+<aside class="sidebar"><a class="brand" href="#dashboard"><span class="brand-mark">LC<span>•</span></span><span>LOUVOR<br><b>CENTRAL</b></span></a>
+<p class="nav-label">MINISTÉRIO DE LOUVOR</p><nav aria-label="Principal">
+<button data-page="dashboard"><span aria-hidden="true">◫</span> Visão geral</button><button data-page="services"><span aria-hidden="true">▦</span> Cultos e escalas</button><button data-page="songs"><span aria-hidden="true">♫</span> Repertório</button><button data-page="members"><span aria-hidden="true">♧</span> Integrantes</button>
+</nav><div class="sidebar-foot"><span class="eyebrow">UMA EQUIPE. UM PROPÓSITO.</span><p>Tudo preparado<br>para servir juntos.</p><button id="auth-button" class="editor-button">Acesso de editor</button><small id="auth-state">Consulta compartilhada</small></div></aside>
+<main><header class="topbar"><span>MINISTÉRIO / <b id="breadcrumb">VISÃO GERAL</b></span><div><span id="status" role="status">Carregando…</span><button class="icon-button" id="refresh" aria-label="Atualizar dados">↻</button></div></header><div id="connection-notice" role="alert"></div><div id="content" tabindex="-1" aria-busy="true"><div class="loading">Carregando a programação…</div></div><footer>LOUVOR CENTRAL <span>Planejar com cuidado. Servir com propósito.</span></footer></main>
+<dialog id="modal" aria-labelledby="modal-title"><form id="edit-form"><div class="modal-heading"><h2 id="modal-title"></h2><button type="button" class="icon-button" id="close-modal" aria-label="Fechar">×</button></div><div id="fields"></div><p id="form-error" role="alert"></p><div class="form-actions"><button type="button" class="secondary" id="cancel-modal">Cancelar</button><button type="submit" class="primary" id="save-button">Salvar</button></div></form></dialog>
+<div id="toast" role="status" hidden></div><noscript>Ative o JavaScript para consultar a programação.</noscript>
+<script>window.LOUVOR_CONFIG={"apiKey":"AIzaSyBz7gYvEC0Ucg5CHBDNo1oWkTiyZWz16F4","authDomain":"louvor-central.firebaseapp.com","projectId":"louvor-central","storageBucket":"louvor-central.firebasestorage.app","messagingSenderId":"689535649510","appId":"1:689535649510:web:0dc926ece448e4c9891d27"}
+;window.addEventListener('DOMContentLoaded',()=>{
+'use strict';
+const $=id=>document.getElementById(id);
+const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const state={page:'dashboard',service:null,members:[],songs:[],services:[],service_members:[],service_songs:[],session:null,editor:false,loaded:false,busy:false,query:'',epoch:0,realtime:false};
+const tables=['members','songs','services','service_members','service_songs'];
+const config=window.LOUVOR_CONFIG||{};
+let db=null,auth=null,modalSubmit=null,toastTimer,refreshTimer,authEpoch=0;
+const dateFormat=new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'long'});
+const shortDate=s=>s?dateFormat.format(new Date(`${s}T12:00:00`)):'';
+const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date());
+const currentTime=()=>new Intl.DateTimeFormat('en-GB',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+const upcoming=()=>state.services.filter(s=>s.service_date>today()||(s.service_date===today()&&s.service_time.slice(0,5)>=currentTime())).sort((a,b)=>(a.service_date+a.service_time).localeCompare(b.service_date+b.service_time));
+const memberBy=id=>state.members.find(m=>m.id===id)||state.service_members.find(m=>m.member_id===id)?.member_snapshot;
+const songBy=id=>state.songs.find(s=>s.id===id)||state.service_songs.find(s=>s.song_id===id)?.song_snapshot;
+const tracksFor=id=>state.service_songs.filter(s=>s.service_id===id).sort((a,b)=>a.position-b.position||a.id.localeCompare(b.id));
+const teamFor=id=>state.service_members.filter(m=>m.service_id===id);
+const initials=name=>name.trim().split(/\s+/).slice(0,2).map(s=>s[0]).join('').toUpperCase();
+const empty=text=>`<div class="empty">${escapeHTML(text)}</div>`;
+const button=(text,action,id='',className='secondary',extra='')=>`<button class="${className}" data-action="${action}" data-id="${escapeHTML(id)}" ${extra}>${escapeHTML(text)}</button>`;
+const editButton=(...args)=>state.editor?button(...args):'';
+const heading=(title,description,action,label)=>`<div class="page-head"><div><h1>${escapeHTML(title)}</h1><p>${escapeHTML(description)}</p></div>${action?editButton(label,action,'','primary'):''}</div>`;
+function link(url,label){try{const u=new URL(url);return ['https:','http:'].includes(u.protocol)?`<a class="text-link" href="${escapeHTML(u.href)}" target="_blank" rel="noopener noreferrer">${label} ↗</a>`:''}catch{return ''}}
+function message(text){clearTimeout(toastTimer);$('toast').textContent=text;$('toast').hidden=false;toastTimer=setTimeout(()=>$('toast').hidden=true,5500)}
+function errorMessage(error){if(error?.code==='23505')return 'Este registro já existe. Atualize a página para conferir.';if(error?.code==='permission-denied'||error?.code==='42501'||error?.status===403)return 'Seu acesso não permite esta alteração. Entre com uma conta de editor autorizada.';if(error?.code==='resource-exhausted')return 'A cota gratuita do banco foi atingida. Aguarde a renovação da cota ou fale com o responsável.';if(error?.message?.includes('Failed to fetch'))return 'Não foi possível conectar. Verifique a internet e tente novamente.';return error?.message||'Não foi possível concluir. Tente novamente.'}
+function fail(error){message(errorMessage(error))}
+function updateAuthUI(){ $('auth-button').hidden=true;$('auth-state').textContent='Edição compartilhada • sem login'; }
 function render(){
- let html="";
- if(!configured){
-  el("content").innerHTML=header("Configure o Supabase","Conecte o banco para começar")
-   +`<div class="notice">Preencha SUPABASE_URL e SUPABASE_KEY no início do JavaScript.
-   Execute também o SQL das tabelas no seu projeto Supabase.</div>`;
-  el("status").textContent="Não configurado";
-  return;
- }
- if(page==="dashboard")html=dashboard();
- if(page==="members")html=membersPage();
- if(page==="songs")html=songsPage();
- if(page==="services")html=servicesPage();
- el("content").innerHTML=html;
+ document.querySelectorAll('[data-page]').forEach(b=>{const active=b.dataset.page===state.page;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});
+ $('breadcrumb').textContent=({dashboard:'VISÃO GERAL',services:'CULTOS E ESCALAS',songs:'REPERTÓRIO',members:'INTEGRANTES'})[state.page];
+ $('content').setAttribute('aria-busy','false');
+ if(!state.loaded){$('content').innerHTML=heading('Tudo começa com a próxima canção.','A programação compartilhada estará disponível assim que a conexão estiver pronta.')+`<section class="panel"><h2>${db?'Aguardando a programação':'Estamos preparando este espaço'}</h2>${empty(db?'Use Atualizar para tentar carregar novamente.':'O responsável ainda precisa concluir a conexão do ministério. Nenhum dado foi salvo neste dispositivo.')}</section>`;return}
+ $('content').innerHTML=state.page==='dashboard'?dashboard():state.page==='members'?membersPage():state.page==='songs'?songsPage():servicesPage();
 }
-function dashboard(){
- const upcoming=nextCult();
- const assigned=upcoming?serviceMembers.filter(x=>x.service_id===upcoming.id):[];
- const playlist=upcoming?serviceSongs.filter(x=>x.service_id===upcoming.id).sort((a,b)=>a.position-b.position):[];
- return header("Visão geral","Tudo o que a equipe precisa para o próximo culto.")
- +`<div class="cards">
- <div class="card"><small>Integrantes</small><strong>${members.length}</strong></div>
- <div class="card"><small>Músicas cadastradas</small><strong>${songs.length}</strong></div>
- <div class="card"><small>Cultos programados</small><strong>${services.filter(x=>x.service_date>=today()).length}</strong></div>
- </div>
- <div class="grid">
- <section class="panel"><h2>Próximo culto</h2>
- ${upcoming?`<h2>${safe(upcoming.title)}</h2>
- <p>${dateText(upcoming.service_date)} • ${safe(upcoming.service_time||"")}
- <br>${safe(upcoming.location||"")}</p>
- <button class="primary" onclick="openService('${upcoming.id}')">Ver planejamento</button>`
- :empty("Nenhum culto futuro cadastrado.")}</section>
- <section class="panel"><h2>Equipe escalada</h2>
- ${assigned.length?assigned.map(x=>`<div class="item"><div><strong>${safe(memberBy(x.member_id)?.name||"Integrante")}</strong><small>${safe(x.function_name||"Equipe")}</small></div></div>`).join("")
- :empty("Nenhum integrante escalado para o próximo culto.")}</section>
- </div>
- <section class="panel"><h2>Sequência de músicas do próximo culto</h2>
- ${playlist.length?playlist.map((x,i)=>{
- const s=songBy(x.song_id);
- return `<div class="item"><div><strong>${i+1}. ${safe(s?.title||"Música")}</strong><small>${safe(s?.artist||"")} • Tom: ${safe(x.chosen_key||s?.song_key||"-")}</small></div></div>`;
- }).join(""):empty("Nenhuma música definida ainda.")}</section>`;
+function dashboard(){const next=upcoming()[0],team=next?teamFor(next.id):[],tracks=next?tracksFor(next.id):[];
+ return heading('Vamos preparar o próximo culto.','Escalas, canções e cada detalhe para servir em unidade.')+`<div class="stats"><div class="stat"><div><small>Integrantes ativos</small><strong>${state.members.filter(m=>m.active).length}</strong></div><span class="stat-icon" aria-hidden="true">♧</span></div><div class="stat"><div><small>No repertório</small><strong>${state.songs.length}</strong></div><span class="stat-icon" aria-hidden="true">♫</span></div><div class="stat"><div><small>Próximos cultos</small><strong>${upcoming().length}</strong></div><span class="stat-icon" aria-hidden="true">▦</span></div></div><div class="dashboard-grid"><div><section class="panel hero"><span class="eyebrow">NOSSO PRÓXIMO ENCONTRO</span>${next?`<div class="date-block"><b>${next.service_date.slice(-2)}</b><span>${new Date(next.service_date+'T12:00:00').toLocaleString('pt-BR',{month:'short'})}</span></div><h2>${escapeHTML(next.title)}</h2><p>${shortDate(next.service_date)} · ${escapeHTML(next.service_time.slice(0,5))}<br>${escapeHTML(next.location||'Local a definir')} · ${tracks.length} ${tracks.length===1?'música':'músicas'}</p>${button('Ver planejamento','open-service',next.id,'primary')}`:`<h2>Um novo encontro<br>começa aqui.</h2>${empty('Ainda não há cultos futuros na programação.')}${editButton('Programar culto','service','','primary')}`}</section><section class="panel"><div class="panel-head"><h2>Sequência musical</h2><span class="pill">${tracks.length} MÚSICAS</span></div>${tracks.length?tracks.map((t,i)=>trackRow(t,i,false)).join(''):empty('As músicas do próximo culto aparecerão aqui.')}</section></div><div><section class="panel"><div class="panel-head"><h2>Equipe escalada</h2><span class="pill">${team.length} PESSOAS</span></div>${team.length?team.map(m=>teamRow(m,false)).join(''):empty('A equipe do próximo culto ainda não foi escalada.')}</section><section class="panel"><div class="panel-head"><h2>Próximos encontros</h2></div>${upcoming().slice(0,4).map(s=>`<div class="item"><div><strong>${escapeHTML(s.title)}</strong><small>${shortDate(s.service_date)} · ${escapeHTML(s.service_time.slice(0,5))}</small></div>${button('Ver','open-service',s.id)}</div>`).join('')||empty('Nenhum encontro programado.')}</section><section class="panel"><h2>Avisos para a equipe</h2>${next?.notes?`<p class="notes">${escapeHTML(next.notes)}</p>`:empty('Sem avisos para o próximo culto.')}</section></div></div>`;
 }
-function membersPage(){
- return header("Integrantes","Organize os músicos, vocalistas e responsáveis.","memberModal()","+ Novo integrante")
- +`<section class="panel">${members.length?members.map(x=>`
- <div class="item"><div><strong>${safe(x.name)}</strong><small>${safe(x.role)} • ${x.active?"Ativo":"Inativo"}</small></div>
- <div class="actions"><button class="secondary" onclick="memberModal('${x.id}')">Editar</button>
- <button class="danger" onclick="removeRow('members','${x.id}')">Excluir</button></div></div>`).join("")
- :empty("Cadastre o primeiro integrante da equipe.")}</section>`;
-}
-function songsPage(){
- return header("Repertório","Músicas, tons e referências organizados.","songModal()","+ Nova música")
- +`<section class="panel">${songs.length?songs.map(x=>`
- <div class="item"><div><strong>${safe(x.title)}</strong>
- <small>${safe(x.artist||"Sem artista")} • Tom: ${safe(x.song_key||"-")} ${x.bpm?"• "+x.bpm+" BPM":""}</small>
- <div style="margin-top:9px">${link(x.youtube_url,"Ouvir música")} ${link(x.chords_url,"Ver cifra")}</div></div>
- <div class="actions"><button class="secondary" onclick="songModal('${x.id}')">Editar</button>
- <button class="danger" onclick="removeRow('songs','${x.id}')">Excluir</button></div></div>`).join("")
- :empty("Adicione as músicas do ministério.")}</section>`;
-}
-function link(url,label){
- try{
-  const u=new URL(url);
-  if(!["http:","https:"].includes(u.protocol))return "";
-  return `<a class="link" target="_blank" rel="noopener noreferrer" href="${safe(u.href)}">${label} ↗</a> &nbsp;`;
- }catch{return ""}
-}
-function servicesPage(){
- if(selectedService)return serviceDetail();
- return header("Cultos e escalas","Planeje as próximas celebrações.","serviceModal()","+ Novo culto")
- +`<section class="panel">${services.length?[...services]
- .sort((a,b)=>b.service_date.localeCompare(a.service_date)).map(x=>`
- <div class="item"><div><strong>${safe(x.title)}</strong><small>${dateText(x.service_date)} • ${safe(x.service_time||"")}</small></div>
- <div class="actions"><button class="primary" onclick="openService('${x.id}')">Abrir</button>
- <button class="secondary" onclick="serviceModal('${x.id}')">Editar</button>
- <button class="danger" onclick="removeRow('services','${x.id}')">Excluir</button></div></div>`).join("")
- :empty("Nenhum culto cadastrado.")}</section>`;
-}
-function openService(id){
- selectedService=id;page="services";render();
-}
-function serviceDetail(){
- const c=services.find(x=>x.id===selectedService);
- if(!c){selectedService=null;return servicesPage()}
- const team=serviceMembers.filter(x=>x.service_id===c.id);
- const tracks=serviceSongs.filter(x=>x.service_id===c.id).sort((a,b)=>a.position-b.position);
- return `<button class="secondary" onclick="selectedService=null;render()">← Voltar</button>
- <div style="height:20px"></div>
- ${header(safe(c.title),dateText(c.service_date)+" • "+safe(c.service_time||""))}
- ${c.notes?`<div class="notice">${safe(c.notes)}</div>`:""}
- <div class="grid">
- <section class="panel"><div class="topline"><h2>Equipe escalada</h2>
- <button class="primary" onclick="assignModal()">+ Escalar</button></div>
- ${team.length?team.map(x=>`<div class="item">
- <div><strong>${safe(memberBy(x.member_id)?.name||"Integrante")}</strong><small>${safe(x.function_name)}</small></div>
- <button class="danger" onclick="removeAssignment('${x.member_id}')">Remover</button></div>`).join("")
- :empty("Nenhum integrante escalado.")}</section>
- <section class="panel"><div class="topline"><h2>Sequência musical</h2>
- <button class="primary" onclick="trackModal()">+ Música</button></div>
- ${tracks.length?tracks.map((x,i)=>{
- const s=songBy(x.song_id);
- return `<div class="item"><div><strong>${i+1}. ${safe(s?.title||"Música")}</strong>
- <small>Tom: ${safe(x.chosen_key||s?.song_key||"-")}</small>
- <div style="margin-top:7px">${link(s?.youtube_url,"Ouvir")} ${link(s?.chords_url,"Cifra")}</div>
- ${x.notes?`<p>${safe(x.notes)}</p>`:""}</div>
- <div class="actions"><button class="secondary" onclick="editTrack('${x.id}')">Tom</button>
- <button class="danger" onclick="removeRow('service_songs','${x.id}')">×</button></div></div>`;
- }).join(""):empty("Selecione as músicas do culto.")}</section></div>`;
-}
-function showModal(title,fields,submit){
- el("modalroot").innerHTML=`<div class="modal-bg" id="backdrop">
- <div class="modal"><h2>${title}</h2><form id="editForm">${fields}
- <div class="form-actions"><button class="primary" type="submit">Salvar</button>
- <button class="secondary" type="button" onclick="closeModal()">Cancelar</button></div></form></div></div>`;
- el("backdrop").addEventListener("click",e=>{if(e.target.id==="backdrop")closeModal()});
- el("editForm").onsubmit=async e=>{
-  e.preventDefault();
-  const data=Object.fromEntries(new FormData(e.target).entries());
-  try{await submit(data);closeModal();await load()}
-  catch(err){alert("Erro ao salvar: "+err.message)}
- };
-}
-function closeModal(){el("modalroot").innerHTML=""}
-function field(label,name,value="",type="text",required=false){
- return `<label>${label}</label><input name="${name}" type="${type}" value="${safe(value)}" ${required?"required":""}>`;
-}
-function area(label,name,value=""){
- return `<label>${label}</label><textarea name="${name}">${safe(value)}</textarea>`;
-}
-function choice(label,name,options,selected=""){
- return `<label>${label}</label><select name="${name}">`+options.map(x=>
- `<option value="${safe(x[0])}" ${String(x[0])===String(selected)?"selected":""}>${safe(x[1])}</option>`).join("")+"</select>";
-}
+function membersPage(){return heading('Quem faz parte.','Músicos, vozes e pessoas que cuidam de cada detalhe.','member','+ Novo integrante')+`<section class="panel"><div class="panel-head"><h2>Equipe do ministério</h2><span class="pill">${state.members.length} INTEGRANTES</span></div>${state.members.map(m=>`<div class="item"><div class="item-main"><span class="avatar">${escapeHTML(initials(m.name))}</span><div><strong>${escapeHTML(m.name)}</strong><small>${escapeHTML(m.role)} · ${m.active?'Ativo':'Inativo'}</small></div></div><div class="actions">${editButton('Editar','member',m.id)}${editButton('Excluir','delete-member',m.id,'danger')}</div></div>`).join('')||empty('Nenhum integrante cadastrado. Os cadastros feitos pelos editores aparecerão aqui.')}</section>`}
+function songsPage(){return heading('Canções para compartilhar.','Repertório do ministério, com tons e referências para estudar.','song','+ Nova música')+`<div class="search"><label for="song-search">Buscar música</label><input id="song-search" type="search" placeholder="Nome da música ou ministério" value="${escapeHTML(state.query)}"></div><div id="song-results" class="catalog">${songResults()}</div>`}
+function songResults(){const q=state.query.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase();const songs=state.songs.filter(s=>(s.title+' '+s.artist).normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase().includes(q));return songs.map(s=>`<section class="panel song-card"><div class="panel-head"><span class="pill orange">TOM ${escapeHTML(s.song_key||'A DEFINIR')}</span><span class="pill">${s.bpm?escapeHTML(s.bpm)+' BPM':'BPM LIVRE'}</span></div><h2>${escapeHTML(s.title)}</h2><p>${escapeHTML(s.artist||'Ministério não informado')}</p>${s.notes?`<p>${escapeHTML(s.notes)}</p>`:''}<div>${link(s.youtube_url,'Ouvir música')}${link(s.chords_url,'Ver cifra')}</div>${state.editor?`<div class="actions">${editButton('Editar música','song',s.id)}${editButton('Excluir','delete-song',s.id,'danger')}</div>`:''}</section>`).join('')||empty(q?'Nenhuma música encontrada.':'O repertório ainda está vazio.')}
+function servicesPage(){if(state.service)return serviceDetail();return heading('Cada culto, um planejamento.','Organize a equipe e a sequência das músicas.','service','+ Novo culto')+`<section class="panel">${[...state.services].sort((a,b)=>(b.service_date+b.service_time).localeCompare(a.service_date+a.service_time)).map(s=>`<div class="item"><div class="item-main"><span class="track-number">${s.service_date.slice(-2)}</span><div><strong>${escapeHTML(s.title)}</strong><small>${shortDate(s.service_date)} · ${escapeHTML(s.service_time.slice(0,5))} · ${escapeHTML(s.location||'Local a definir')}</small></div></div><div class="actions">${button('Planejamento','open-service',s.id,'primary')}${editButton('Editar','service',s.id)}${editButton('Excluir','delete-service',s.id,'danger')}</div></div>`).join('')||empty('Nenhum culto cadastrado.')}</section>`}
+function serviceDetail(){const s=state.services.find(x=>x.id===state.service);if(!s){state.service=null;return servicesPage()}const team=teamFor(s.id),tracks=tracksFor(s.id);return button('← Todos os cultos','back')+`<div class="detail-spacer"></div>`+heading(s.title,`${shortDate(s.service_date)} · ${s.service_time.slice(0,5)}`)+`<div class="details-meta"><span>${escapeHTML(s.location||'Local a definir')}</span><span>${team.length} integrantes</span><span>${tracks.length} músicas</span>${editButton('Editar culto','service',s.id)}</div>${s.notes?`<section class="panel"><h2>Avisos e observações</h2><p class="notes">${escapeHTML(s.notes)}</p></section>`:''}<div class="two-columns"><section class="panel"><div class="panel-head"><h2>Equipe escalada</h2>${editButton('+ Escalar','assign','','primary')}</div>${team.map(m=>teamRow(m,true)).join('')||empty('Nenhum integrante escalado.')}</section><section class="panel"><div class="panel-head"><h2>Sequência musical</h2>${editButton('+ Música','track','','primary')}</div>${tracks.map((t,i)=>trackRow(t,i,true,tracks.length)).join('')||empty('Selecione músicas do repertório para este culto.')}</section></div>`}
+function teamRow(m,editing){const member=memberBy(m.member_id);return `<div class="item"><div class="item-main"><span class="avatar">${escapeHTML(initials(member?.name||'?'))}</span><div><strong>${escapeHTML(member?.name||'Integrante removido')}</strong><small>${escapeHTML(m.function_name)}${member&&!member.active?' · Inativo':''}</small></div></div>${editing?`<div class="actions">${editButton('Função','assignment',m.member_id)}${editButton('Remover','delete-assignment',m.member_id,'danger')}</div>`:''}</div>`}
+function trackRow(t,i,editing,total=0){const song=songBy(t.song_id);return `<div class="item"><div class="item-main"><span class="track-number">${String(i+1).padStart(2,'0')}</span><div><strong>${escapeHTML(song?.title||'Música removida')}</strong><small>${escapeHTML(song?.artist||'')} · Tom <b>${escapeHTML(t.chosen_key||song?.song_key||'a definir')}</b></small>${t.notes?`<p>${escapeHTML(t.notes)}</p>`:''}<div>${link(song?.youtube_url,'Ouvir')}${link(song?.chords_url,'Cifra')}</div></div></div>${editing?`<div class="actions">${editButton('↑','up',t.id,'secondary',`aria-label="Subir ${escapeHTML(song?.title)}" ${i===0?'disabled':''}`)}${editButton('↓','down',t.id,'secondary',`aria-label="Descer ${escapeHTML(song?.title)}" ${i===total-1?'disabled':''}`)}${editButton('Tom e notas','edit-track',t.id)}${editButton('Remover','delete-track',t.id,'danger')}</div>`:''}</div>`}
+function input(label,name,value='',type='text',required=false,max=180){return `<label for="f-${name}">${label}</label><input id="f-${name}" name="${name}" type="${type}" value="${escapeHTML(value)}" ${required?'required':''} ${type==='number'?'min="20" max="300" step="1"':`maxlength="${max}"`}>`}
+function area(label,name,value='',max=4000){return `<label for="f-${name}">${label}</label><textarea id="f-${name}" name="${name}" maxlength="${max}">${escapeHTML(value)}</textarea>`}
+function select(label,name,choices,value=''){return `<label for="f-${name}">${label}</label><select id="f-${name}" name="${name}" required>${choices.map(([id,text])=>`<option value="${escapeHTML(id)}" ${String(id)===String(value)?'selected':''}>${escapeHTML(text)}</option>`).join('')}</select>`}
+function requireEditor(){if(!state.editor)throw new Error('Aguarde a conexão para alterar a programação.')}
+function modal(title,fields,submit,saveLabel='Salvar'){if(state.busy)return;$('modal-title').textContent=title;$('fields').innerHTML=fields;$('form-error').textContent='';$('save-button').textContent=saveLabel;modalSubmit=submit;$('modal').showModal()}
+function closeModal(){if(state.busy)return;$('modal').close();modalSubmit=null;if(db)load()}
 async function save(table,data,id){
- const q=id?db.from(table).update(data).eq("id",id):db.from(table).insert(data);
- const {error}=await q;
- if(error)throw error;
+ requireEditor();
+ if(!['members','songs','services'].includes(table))throw new Error('Cadastro inválido.');
+ const payload={...data};delete payload.id;
+ const signature=table==='members'?payload.name:table==='songs'?payload.title+'|'+payload.artist:[payload.title,payload.service_date,payload.service_time,payload.location].join('|');
+ const normalized=signature.normalize('NFD').replace(/\p{Diacritic}/gu,'').trim().toLowerCase();
+ const key=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(normalized)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+ const ref=db.collection(table).doc(id||key);
+ await db.runTransaction(async tx=>{const existing=await tx.get(ref);if(!id&&existing.exists&&!existing.data().deleted)throw new Error('Este cadastro já existe. Atualize para conferir.');if(id&&!existing.exists)throw new Error('O registro foi removido por outro editor.');if(id)tx.update(ref,payload);else tx.set(ref,{...payload,deleted:false,...(table==='services'?{team:[],tracks:[]}:{}),created_at:firebase.firestore.FieldValue.serverTimestamp()})});
 }
-function memberModal(id){
- const m=members.find(x=>x.id===id);
- showModal(m?"Editar integrante":"Novo integrante",
- field("Nome","name",m?.name,"text",true)
- +field("Função principal","role",m?.role||"Vocal","text",true)
- +choice("Situação","active",[["true","Ativo"],["false","Inativo"]],String(m?.active??true)),
- d=>save("members",{name:d.name,role:d.role,active:d.active==="true"},id));
-}
-function songModal(id){
- const s=songs.find(x=>x.id===id);
- showModal(s?"Editar música":"Nova música",
- field("Nome da música","title",s?.title,"text",true)
- +field("Cantor ou ministério","artist",s?.artist)
- +field("Tom original","song_key",s?.song_key)
- +field("BPM","bpm",s?.bpm||"","number")
- +field("Link do YouTube","youtube_url",s?.youtube_url,"url")
- +field("Link da cifra","chords_url",s?.chords_url,"url")
- +area("Observações","notes",s?.notes),
- d=>save("songs",{...d,bpm:d.bpm?Number(d.bpm):null},id));
-}
-function serviceModal(id){
- const c=services.find(x=>x.id===id);
- showModal(c?"Editar culto":"Novo culto",
- field("Título do culto","title",c?.title||"Culto de Louvor","text",true)
- +field("Data","service_date",c?.service_date||today(),"date",true)
- +field("Horário","service_time",c?.service_time||"19:00","time",true)
- +field("Local","location",c?.location)
- +area("Observações","notes",c?.notes),
- d=>save("services",d,id));
-}
-function assignModal(){
- const available=members.filter(m=>m.active&&!serviceMembers.some(x=>x.service_id===selectedService&&x.member_id===m.id));
- if(!available.length){alert("Cadastre integrantes disponíveis primeiro.");return}
- showModal("Escalar integrante",
- choice("Integrante","member_id",available.map(x=>[x.id,x.name]))
- +field("Função neste culto","function_name","Vocal","text",true),
- async d=>{
-  const {error}=await db.from("service_members").insert({...d,service_id:selectedService});
-  if(error)throw error;
- });
-}
-function trackModal(){
- const available=songs.filter(s=>!serviceSongs.some(x=>x.service_id===selectedService&&x.song_id===s.id));
- if(!available.length){alert("Cadastre músicas disponíveis primeiro.");return}
- showModal("Adicionar música ao culto",
- choice("Música","song_id",available.map(x=>[x.id,x.title]))
- +field("Tom neste culto","chosen_key")
- +area("Observações","notes"),
- async d=>{
-  const current=serviceSongs.filter(x=>x.service_id===selectedService);
-  const max=Math.max(0,...current.map(x=>x.position));
-  const {error}=await db.from("service_songs").insert({...d,
-   service_id:selectedService,position:max+1});
-  if(error)throw error;
- });
-}
-function editTrack(id){
- const t=serviceSongs.find(x=>x.id===id);
- if(!t)return;
- showModal("Editar tom e observações",
- field("Tom neste culto","chosen_key",t.chosen_key)
- +area("Observações","notes",t.notes),
- d=>save("service_songs",d,id));
-}
-async function removeRow(table,id){
- if(!confirm("Tem certeza que deseja excluir?"))return;
- try{
-  const {error}=await db.from(table).delete().eq("id",id);
-  if(error)throw error;
-  if(table==="services")selectedService=null;
-  await load();
- }catch(e){alert("Erro: "+e.message)}
-}
-async function removeAssignment(id){
- if(!confirm("Remover integrante desta escala?"))return;
- try{
-  const {error}=await db.from("service_members").delete()
-   .eq("service_id",selectedService).eq("member_id",id);
-  if(error)throw error;
-  await load();
- }catch(e){alert("Erro: "+e.message)}
-}
-async function load(){
- if(!db){render();return}
- const tables=["members","songs","services","service_members","service_songs"];
- try{
-  const results=await Promise.all(tables.map(t=>db.from(t).select("*")));
-  const error=results.find(r=>r.error)?.error;
-  if(error)throw error;
-  [members,songs,services,serviceMembers,serviceSongs]=results.map(r=>r.data||[]);
-  el("status").textContent="● Conectado";
-  render();
- }catch(e){
-  el("status").textContent="Erro na conexão";
-  el("content").innerHTML=`<div class="notice">Não foi possível carregar os dados: ${safe(e.message)}</div>`;
- }
-}
-if(db){
- db.channel("louvor-central-atualizacoes")
- .on("postgres_changes",{event:"*",schema:"public"},()=>{
-  if(!el("editForm"))load();
- }).subscribe();
- document.addEventListener("visibilitychange",()=>{
-  if(!document.hidden&&!el("editForm"))load();
- });
- setInterval(()=>{if(!document.hidden&&!el("editForm"))load()},30000);
-}
-load();
-</script>
-</body>
-</html>
+async function changeService(serviceId,change){requireEditor();const ref=db.collection('services').doc(serviceId);await db.runTransaction(async tx=>{const snap=await tx.get(ref);if(!snap.exists)throw new Error('Culto não encontrado.');const data=snap.data();const next=change({team:data.team||[],tracks:data.tracks||[]});tx.update(ref,next)})}
+function memberModal(id){requireEditor();const m=memberBy(id),newId=crypto.randomUUID();modal(m?'Editar integrante':'Novo integrante',input('Nome','name',m?.name,'text',true,120)+input('Função principal','role',m?.role||'Vocalista','text',true,80)+'<datalist id="roles">'+['Vocalista','Ministro de louvor','Tecladista','Baterista','Guitarrista','Violonista','Baixista','Sonoplasta','Mídia'].map(r=>`<option value="${r}">`).join('')+'</datalist>'+select('Situação','active',[[true,'Ativo'],[false,'Inativo']],m?.active??true),d=>save('members',{...(!m?{id:newId}:{}),name:d.name,role:d.role,active:d.active==='true'},id));$('f-role').setAttribute('list','roles')}
+function songModal(id){requireEditor();const s=songBy(id),newId=crypto.randomUUID();modal(s?'Editar música':'Nova música',input('Nome da música','title',s?.title,'text',true,180)+input('Cantor ou ministério original','artist',s?.artist,'text',false,140)+input('Tom original','song_key',s?.song_key,'text',false,24)+input('BPM (opcional)','bpm',s?.bpm||'','number')+input('Link do YouTube','youtube_url',s?.youtube_url,'url',false,1200)+input('Link da cifra','chords_url',s?.chords_url,'url',false,1200)+area('Observações','notes',s?.notes),d=>save('songs',{...d,...(!s?{id:newId}:{}),bpm:d.bpm?Number(d.bpm):null},id))}
+function serviceModal(id){requireEditor();const s=state.services.find(x=>x.id===id),newId=crypto.randomUUID();modal(s?'Editar culto':'Novo culto',input('Nome do culto','title',s?.title||'Culto de Louvor','text',true,160)+input('Data','service_date',s?.service_date||today(),'date',true)+input('Horário (Brasília)','service_time',s?.service_time?.slice(0,5)||'19:00','time',true)+input('Local','location',s?.location,'text',false,180)+area('Avisos e observações da equipe','notes',s?.notes)+'<p class="notes">Este culto sai da programação 3 dias após o cadastro. A limpeza do banco ocorre diariamente.</p>',d=>save('services',{...d,...(!s?{id:newId}: {})},id))}
+function assignModal(id){requireEditor();const serviceId=state.service,existing=teamFor(serviceId).find(m=>m.member_id===id);const available=state.members.filter(m=>m.active&&!teamFor(serviceId).some(x=>x.member_id===m.id));if(!existing&&!available.length)return message('Não há integrantes ativos disponíveis para escalar.');modal(existing?'Editar função':'Escalar integrante',(existing?`<p>${escapeHTML(memberBy(id)?.name)}</p>`:select('Integrante','member_id',available.map(m=>[m.id,m.name])))+input('Função neste culto','function_name',existing?.function_name||available[0]?.role,'text',true,100),d=>changeService(serviceId,({team})=>{const memberId=id||d.member_id;const index=team.findIndex(m=>m.member_id===memberId);if(!existing&&index>=0)throw new Error('Este integrante já está escalado.');if(existing&&index<0)throw new Error('Esta escala mudou. Atualize e tente novamente.');if(existing)team[index]={...team[index],function_name:d.function_name};else team.push({member_id:memberId,function_name:d.function_name,member_snapshot:memberBy(memberId)});return {team}}));if(!existing)$('f-member_id').addEventListener('change',e=>$('f-function_name').value=memberBy(e.target.value)?.role||'')}
+function trackModal(id){requireEditor();const serviceId=state.service,t=state.service_songs.find(x=>x.id===id),newId=crypto.randomUUID();const available=state.songs.filter(s=>!tracksFor(serviceId).some(x=>x.song_id===s.id));if(!t&&!available.length)return message('Não há músicas disponíveis. Cadastre uma música no repertório.');modal(t?'Tom e observações':'Adicionar música',(t?`<p>${escapeHTML(songBy(t.song_id)?.title)}</p>`:select('Música','song_id',available.map(s=>[s.id,s.title])))+input('Tom neste culto (vazio usa o original)','chosen_key',t?.chosen_key,'text',false,24)+area('Observações para este culto','notes',t?.notes,2000),d=>changeService(serviceId,({tracks})=>{if(t){const index=tracks.findIndex(x=>x.id===id);if(index<0)throw new Error('A música foi removida deste culto.');tracks[index]={...tracks[index],...d}}else{if(tracks.some(x=>x.id===newId))return {tracks};if(tracks.some(x=>x.song_id===d.song_id))throw new Error('Esta música já está no culto.');tracks.push({...d,id:newId,song_snapshot:songBy(d.song_id)})}return {tracks}}))}
+function confirmDelete(table,id){requireEditor();const serviceId=state.service;const names={members:memberBy(id)?.name,songs:songBy(id)?.title,services:state.services.find(s=>s.id===id)?.title,service_songs:songBy(state.service_songs.find(t=>t.id===id)?.song_id)?.title,service_members:memberBy(id)?.name};const note=['members','songs'].includes(table)?'O histórico nos cultos existentes será preservado.':table==='services'?'A equipe e a sequência musical deste culto também serão removidas.':'O cadastro original será mantido.';modal('Confirmar exclusão',`<p>Excluir <strong>${escapeHTML(names[table]||'este registro')}</strong>?</p><p class="notes">${note} Confirme para remover da programação.</p>`,async()=>{if(table==='service_members')await changeService(serviceId,({team})=>({team:team.filter(m=>m.member_id!==id)}));else if(table==='service_songs')await changeService(serviceId,({tracks})=>({tracks:tracks.filter(t=>t.id!==id)}));else await db.collection(table).doc(id).update({deleted:true});if(table==='services')state.service=null},'Excluir')}
+async function moveTrack(id,direction){requireEditor();if(state.busy)return;const tracks=tracksFor(state.service),index=tracks.findIndex(t=>t.id===id),target=index+direction;if(target<0||target>=tracks.length)return;const before=tracks.map(t=>t.id);state.busy=true;try{await changeService(state.service,({tracks})=>{if(tracks.map(t=>t.id).join(',')!==before.join(','))throw new Error('A sequência mudou em outro dispositivo. Atualize e tente novamente.');[tracks[index],tracks[target]]=[tracks[target],tracks[index]];return {tracks}});await load();message('Ordem das músicas atualizada.')}catch(e){fail(e);await load()}finally{state.busy=false}}
+let listeners=[],received=new Set();
+function flattenServices(){state.service_members=state.services.flatMap(s=>(s.team||[]).map(m=>({...m,service_id:s.id})));state.service_songs=state.services.flatMap(s=>(s.tracks||[]).map((t,i)=>({...t,service_id:s.id,position:i+1})));}
+function receive(table,snapshot){state[table]=snapshot.docs.filter(d=>!d.data().deleted&&(table!=='services'||!d.data().created_at||d.data().created_at.toMillis()+259200000>Date.now())).map(d=>({...d.data(),id:d.id}));received.add(table);flattenServices();state.members.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));state.songs.sort((a,b)=>a.title.localeCompare(b.title,'pt-BR'));state.loaded=received.size===3;$('connection-notice').innerHTML='';$('status').textContent=snapshot.metadata.fromCache?'Reconectando…':'Sincronizado';if(!$('modal').open)render()}
+function connectionError(e){$('status').textContent='Falha na conexão';$('connection-notice').innerHTML=`<div class="notice error">${escapeHTML(errorMessage(e))}${button('Tentar novamente','retry')}</div>`;render()}
+async function load(){if(!db)return;try{await Promise.all(['members','songs','services'].map(async table=>receive(table,await db.collection(table).get({source:'server'}))))}catch(e){connectionError(e)}}
+function listen(){listeners.forEach(stop=>stop());listeners=['members','songs','services'].map(table=>db.collection(table).onSnapshot({includeMetadataChanges:true},snap=>receive(table,snap),connectionError))}
+async function start(){updateAuthUI();if(!config.projectId||!config.apiKey){$('status').textContent='Conexão pendente';render();return}if(!window.firebase){$('status').textContent='Falha ao iniciar';render();return}try{firebase.initializeApp(config);db=firebase.firestore();state.editor=true;listen()}catch(e){connectionError(e)}}
+$('edit-form').addEventListener('submit',async e=>{e.preventDefault();if(state.busy||!modalSubmit)return;const data=Object.fromEntries([...new FormData(e.currentTarget).entries()].map(([k,v])=>[k,String(v).trim()]));if([...e.currentTarget.querySelectorAll('[required]')].some(i=>!String(i.value).trim())){$('form-error').textContent='Preencha os campos obrigatórios.';return}state.busy=true;const prior=$('save-button').textContent;$('save-button').disabled=true;$('cancel-modal').disabled=true;$('close-modal').disabled=true;$('save-button').textContent='Aguarde…';$('form-error').textContent='';try{await modalSubmit(data);$('modal').close();modalSubmit=null;await load();if(prior!=='Enviar link de acesso')message(prior==='Excluir'?'Registro excluído.':'Alterações salvas.')}catch(error){$('form-error').textContent=errorMessage(error)}finally{state.busy=false;$('save-button').disabled=false;$('cancel-modal').disabled=false;$('close-modal').disabled=false;$('save-button').textContent=prior}});
+$('close-modal').onclick=closeModal;$('cancel-modal').onclick=closeModal;$('modal').addEventListener('cancel',e=>{e.preventDefault();closeModal()});$('refresh').onclick=()=>db?load():location.reload();
+document.addEventListener('input',e=>{if(e.target.id==='song-search'){state.query=e.target.value;$('song-results').innerHTML=songResults()}});
+document.addEventListener('click',async e=>{const nav=e.target.closest('[data-page]');if(nav){state.page=nav.dataset.page;state.service=null;render();return}const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const id=b.dataset.id;try{switch(b.dataset.action){case'retry':listen();await load();break;case'back':state.service=null;render();break;case'open-service':state.page='services';state.service=id;render();break;case'member':memberModal(id||undefined);break;case'song':songModal(id||undefined);break;case'service':serviceModal(id||undefined);break;case'assign':assignModal();break;case'assignment':assignModal(id);break;case'track':trackModal();break;case'edit-track':trackModal(id);break;case'up':await moveTrack(id,-1);break;case'down':await moveTrack(id,1);break;default:{const table={'delete-member':'members','delete-song':'songs','delete-service':'services','delete-track':'service_songs','delete-assignment':'service_members'}[b.dataset.action];if(table)confirmDelete(table,id)}}}catch(error){fail(error)}});
+window.addEventListener('online',()=>db&&listen());window.addEventListener('offline',()=>{$('status').textContent='Sem conexão';message('Sem internet. Aguarde a conexão antes de salvar alterações.')});
+start();
+
+});</script></body></html>
