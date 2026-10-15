@@ -1,0 +1,34 @@
+rules_version = '2';
+service cloud.firestore {
+ match /databases/{database}/documents {
+  // Edição compartilhada por qualquer visitante, conforme escolha do ministério.
+  // Validação limita campos/tamanhos. Credenciais administrativas nunca vão ao site.
+  function text(v,n){return v is string && v.size()<=n;}
+  function title(v,n){return text(v,n) && v.size()>0;}
+  function url(v){return text(v,1200) && (v=='' || v.matches('https?://.*'));}
+  function common(d){return d.deleted is bool && d.created_at is timestamp && ((resource==null && d.created_at==request.time) || (resource!=null && d.created_at==resource.data.created_at));}
+  match /members/{id} {
+   allow read: if true;
+   allow create,update: if request.resource.data.keys().hasOnly(['name','role','phone','active','created_at','deleted']) && common(request.resource.data)
+    && title(request.resource.data.name,120) && title(request.resource.data.role,80) && request.resource.data.active is bool && (!('phone' in request.resource.data) || text(request.resource.data.phone,32));
+   allow delete: if false;
+  }
+  match /songs/{id} {
+   allow read: if true;
+   allow create,update: if request.resource.data.keys().hasOnly(['title','artist','song_key','bpm','youtube_url','chords_url','notes','created_at','deleted']) && common(request.resource.data)
+    && title(request.resource.data.title,180) && text(request.resource.data.artist,140) && text(request.resource.data.song_key,24)
+    && (request.resource.data.bpm==null || (request.resource.data.bpm is int && request.resource.data.bpm>=20 && request.resource.data.bpm<=300))
+    && url(request.resource.data.youtube_url) && url(request.resource.data.chords_url) && text(request.resource.data.notes,4000);
+   allow delete: if false;
+  }
+  match /services/{id} {
+   allow read: if true;
+   allow create,update: if request.resource.data.keys().hasOnly(['title','service_date','service_time','location','notes','team','tracks','created_at','deleted']) && common(request.resource.data)
+    && title(request.resource.data.title,160) && request.resource.data.service_date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+    && request.resource.data.service_time.matches('^[0-9]{2}:[0-9]{2}$') && text(request.resource.data.location,180) && text(request.resource.data.notes,4000)
+    && request.resource.data.team is list && request.resource.data.team.size()<=100 && request.resource.data.tracks is list && request.resource.data.tracks.size()<=100;
+   allow delete: if false;
+  }
+  match /{document=**}{allow read,write:if false;}
+ }
+}
