@@ -1,0 +1,36 @@
+/* Scoped to the reader: the existing application layout is unchanged. */
+body.chart-reader-open{overflow:hidden!important;overscroll-behavior:none}
+#chart-reader{position:fixed;inset:0;z-index:500;background:#fcfcfb;color:#171717;display:flex;flex-direction:column;width:100%;height:100dvh;max-width:100%;overflow:hidden;touch-action:pan-y;font-size:16px;isolation:isolate}
+#chart-reader[hidden]{display:none!important}
+#chart-reader button,#chart-reader a{touch-action:manipulation;min-height:44px;min-width:44px;border:1px solid #dedee2;border-radius:9px;background:white;color:#34343b;padding:9px 13px;font:inherit;font-size:13px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:none}
+#chart-reader button:active{transform:none;background:#fff1e4}
+#chart-reader button:disabled{opacity:.4}
+#chart-reader .chart-header{flex:none;padding:16px max(24px,env(safe-area-inset-right)) 14px max(24px,env(safe-area-inset-left));border-bottom:1px solid #e9e9ed;display:flex;justify-content:space-between;gap:16px;align-items:center;background:white}
+#chart-reader .chart-header>div:first-child{min-width:0}
+#chart-reader .chart-header small{font-size:9px;letter-spacing:1.5px;color:#a54b00}
+#chart-reader h2{font-size:22px;margin:4px 0;overflow-wrap:anywhere}
+#chart-reader .chart-header p{font-size:12px;color:#71717a;margin:0}
+#chart-reader .chart-top-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+#chart-reader #chart-close{font-size:24px;padding:0;width:44px;flex-shrink:0}
+#chart-reader #chart-message{flex:none;font-size:12px;color:#7c4a21;background:#fff6ed;padding:6px 24px;min-height:30px;margin:0;overflow-wrap:anywhere}
+#chart-reader #chart-scroll{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scroll-behavior:auto!important;touch-action:pan-y;scrollbar-gutter:stable;padding:30px max(24px,env(safe-area-inset-right)) 45vh max(24px,env(safe-area-inset-left));-webkit-overflow-scrolling:touch}
+#chart-reader #chart-sheet{max-width:1000px;margin:0 auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;font-size:clamp(16px,1.35vw,22px);line-height:1.6;letter-spacing:0;overflow-wrap:anywhere;font-variant-ligatures:none}
+#chart-reader .chart-line{display:flex;flex-wrap:wrap;align-items:flex-start;row-gap:12px;margin:0 0 20px;max-width:100%}
+#chart-reader .chart-unit{display:inline-flex;flex-direction:column;max-width:100%;min-width:0;vertical-align:top;white-space:pre-wrap;overflow-wrap:anywhere}
+#chart-reader .chart-chord{color:#a94400;font-weight:750;white-space:pre-wrap;padding-right:.6ch;line-height:1.6}
+#chart-reader .chart-lyric{white-space:pre-wrap;line-height:1.6}
+#chart-reader .chart-text{white-space:pre-wrap;overflow-wrap:anywhere;min-height:1.6em;margin-bottom:8px}
+#chart-reader .chart-empty{font:16px/1.7 Inter,-apple-system,sans-serif;padding:40px 0;max-width:560px}
+#chart-reader .chart-controls{flex:none;margin:0;max-width:none;border-top:1px solid #e9e9ed;padding:12px max(24px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:20px;background:#fff;font-size:13px;color:#52525b;letter-spacing:0}
+#chart-reader .chart-key-controls,#chart-reader .chart-play-controls{display:flex;align-items:center;gap:10px}
+#chart-reader #chart-key{font-size:22px;font-weight:650;min-width:54px;text-align:center;color:#9d4100}
+#chart-reader #chart-play,#chart-reader #chart-save{background:#ff7900;color:#171717;border-color:#ff7900;min-width:100px}
+#chart-reader .chart-controls label{margin:0;font-size:11px;font-weight:500;min-width:125px}
+#chart-reader input[type=range]{padding:0;border:0;min-height:26px;accent-color:#d15e00;width:150px;background:transparent;touch-action:pan-x}
+#chart-reader #chart-editor{max-width:900px;margin:0 auto;font-size:15px}
+#chart-reader #chart-editor p{line-height:1.6;color:#71717a;font-size:13px}
+#chart-reader #chart-original-key{max-width:220px;font-size:16px}
+#chart-reader #chart-content{font:16px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;white-space:pre-wrap;overflow-wrap:anywhere;min-height:300px;max-width:100%;resize:vertical}
+#chart-reader .chart-editor-actions{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+@media(max-width:700px){#chart-reader .chart-header{padding:10px 14px;gap:8px;align-items:flex-start}#chart-reader h2{font-size:17px;line-height:1.25}#chart-reader .chart-header p{font-size:11px}#chart-reader .chart-header small{font-size:8px}#chart-reader .chart-top-actions{gap:5px;max-width:160px}#chart-reader .chart-top-actions button,#chart-reader .chart-top-actions a{font-size:10px;padding:5px 7px;min-height:38px}#chart-reader #chart-close{min-height:38px;min-width:38px;width:38px}#chart-reader #chart-message{padding:6px 14px;font-size:11px}#chart-reader #chart-scroll{padding:20px 16px 40vh}#chart-reader .chart-controls{padding:9px 12px max(9px,env(safe-area-inset-bottom));flex-wrap:wrap;gap:8px}#chart-reader .chart-key-controls{width:100%;justify-content:center;gap:12px}#chart-reader .chart-play-controls{width:100%;justify-content:space-between;gap:7px}#chart-reader .chart-controls label{min-width:0;flex:1;max-width:150px}#chart-reader input[type=range]{width:100%}#chart-reader #chart-play{min-width:90px}#chart-reader #chart-key-label{font-size:11px}#chart-reader #chart-sheet{font-size:17px}#chart-reader .chart-line{margin-bottom:18px}}
+@media(max-height:500px) and (min-width:701px){#chart-reader .chart-header{padding:6px 20px}#chart-reader .chart-controls{padding:6px 20px}#chart-reader h2{font-size:17px}}
