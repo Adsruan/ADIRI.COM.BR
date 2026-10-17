@@ -31,7 +31,7 @@ function renderPlainChart(content,steps=0,flats=false){
    // Reserve the exact original column of every following chord. If a very
    // tightly spaced chord grows, shrink only its label instead of moving lyrics.
    const start=visualColumns(line.slice(0,m.index));const width=tokens[i+1]?visualColumns(line.slice(0,end))-start:Math.max(visualColumns(line.slice(m.index)),chord.length);
-   const scale=Math.min(1,width/Math.max(1,chord.length));
+   const available=Math.max(.5,width-(tokens[i+1]?0.35:0));const scale=Math.min(1,available/Math.max(1,chord.length));
    out+='<span class="chart-slot" style="width:'+width+'ch"><b class="chart-chord" style="font-size:'+scale+'em">'+esc(chord)+'</b></span>';
   });return out;
  }).join('\n')+'</pre>';
