@@ -12,3 +12,35 @@ function store(initial=null){let data=initial,writes=0;const ref={id:'song',get:
 test('cifra própria salva e lida do Firebase com versão; original não é transposto',async()=>{const f=store();const original='[C]Canção própria';let saved=await f.s.save('song',original,'C',null);assert.equal(saved.revision,1);assert.equal((await f.s.read('song')).content,original);renderChart(original,2);assert.equal(f.get().content,original);saved=await f.s.save('song',original+'\nNova estrofe','C',saved);assert.equal(saved.revision,2);assert.equal(saved.created_at,'server-time');assert.equal(f.writes(),2)});
 test('conflito ou dados inválidos não sobrescrevem a cifra',async()=>{const f=store({content:'Original',revision:2,created_at:'old'});await assert.rejects(f.s.save('song','Novo','C',{revision:1}),/outro dispositivo/);await assert.rejects(f.s.save('song',' ','C',null),/60.000/);await assert.rejects(f.s.save('song','A'.repeat(60001),'C',null),/60.000/);await assert.rejects(f.s.save('song','Texto','ZZ',null),/Informe um tom/);assert.equal(f.writes(),0);assert.equal(f.get().content,'Original')});
 test('regras e integração são aditivas, sem scraping nem expiração',()=>{const fs=require('node:fs');const html=fs.readFileSync('index.html','utf8'),js=fs.readFileSync('charts.js','utf8'),rules=fs.readFileSync('firestore.rules','utf8');assert.match(html,/Ver cifra/);assert.match(html,/tracks\[i\]=\{\.\.\.tracks\[i\],chosen_key:key\}/);assert.match(rules,/match \/charts\/\{songId\}/);assert.match(rules,/resource.data.revision \+ 1/);assert.doesNotMatch(js,/fetch\(|XMLHttpRequest|innerHTML\s*=\s*(?:content|song)/);assert.match(js,/visibilitychange/);assert.match(js,/requestFullscreen/);assert.match(js,/releaseWake/)});
+
+test('texto tradicional mantém espaços, tabs, linhas vazias e posições originais',()=>{
+ const {renderPlainChart,visualColumns}=require('../charts.js');
+ const input='  C    G/B  \n  Minha letra exata  \n\n\tAm7\tF#7(b9)\n\tÚltima estrofe\n';
+ const visible=renderPlainChart(input).replace(/^<pre[^>]*>|<\/pre>$/g,'').replace(/<\/?b[^>]*>/g,'');
+ assert.equal(visible,input);assert.equal(visualColumns('\tAm7\t'),8);
+ const shifted=renderPlainChart('C G/B\nUma letra',1);assert.match(shifted,/width:2ch/);assert.match(shifted,/>Db<|>C#</);assert.match(shifted,/G#\/C/);assert.match(shifted,/\nUma letra<\/pre>/);
+});
+test('12 tons calculados mantêm modo menor, original e progressão para todos os destinos',()=>{
+ const {keyChoices,pitch}=require('../charts.js');
+ for(const original of ['C','Bb','F#','Am','Ebm']){
+  const choices=keyChoices(original);assert.equal(choices.length,12);assert.equal(new Set(choices.map(x=>x.pitch)).size,12);assert.equal(choices.filter(x=>x.original).length,1);assert.equal(choices.find(x=>x.original).key,original);
+  for(const choice of choices){const steps=keyInfo(choice.key).pitch-keyInfo(original).pitch;for(const chord of ['Am7','Fmaj7','C/G','E7(b9)','Bb7sus4','F#m7/A']){
+   const out=transposeChord(chord,steps,keyInfo(choice.key).flat);const root=out.match(/^[A-G][#b]{0,2}/)[0],before=chord.match(/^[A-G][#b]{0,2}/)[0];assert.equal((pitch(root)-pitch(before)+12)%12,(steps+12)%12);assert.equal(out.replace(/^[A-G][#b]{0,2}/,'').split('/')[0],chord.replace(/^[A-G][#b]{0,2}/,'').split('/')[0]);
+  }}
+ }
+});
+
+test('salvamento preserva integralmente espaços, tabulações e linhas finais',async()=>{
+ const f=store(),text='  Am   F  \n\tLetra própria  \n\n';await f.s.save('song',text,'Am',null);assert.equal((await f.s.read('song')).content,text);
+});
+test('baixo das inversões transpõe pelos mesmos semitons nos 12 destinos',()=>{
+ const {pitch}=require('../charts.js');for(let step=0;step<12;step++)for(const chord of ['C/G','F#m7/A','Bbmaj7/D','Bø7/F']){
+  const original=chord.match(/\/([A-G][#b]{0,2})$/)[1];const result=transposeChord(chord,step,true).match(/\/([A-G][#b]{0,2})$/)[1];assert.equal((pitch(result)-pitch(original)+12)%12,step);
+ }
+});
+
+test('anotações de repetição e seções não impedem a transposição nem viram acordes',()=>{
+ const {renderPlainChart}=require('../charts.js');const html=renderPlainChart('[Intro] Am  Fmaj7  C/G  E7(b9) (2x)\nA letra é mantida.\nN.C.  Am  G7sus4',2);
+ for(const chord of ['Bm','Gmaj7','D/A','F#7(b9)','A7sus4'])assert.ok(html.includes('>'+chord+'<'),chord);
+ assert.match(html,/>\[Intro\]</);assert.match(html,/>\(2x\)</);assert.match(html,/A letra é mantida\./);assert.match(html,/>N\.C\.</);
+});
