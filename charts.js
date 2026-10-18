@@ -109,5 +109,6 @@ async function selectKey(next){if(saving||!current?.chart)return;
  try{if(current.serviceId)await api.saveKey(current.serviceId,current.trackId,next,current.chosen);current.chosen=next;showSheet();scroll.scrollTop=position;say(current.serviceId?'Tom salvo somente neste culto.':'Tom de leitura; a cifra original foi preservada.');}
  catch(e){say(api.error(e))}finally{saving=false;controls(!!displayKey());}}
 async function close(){if(saving){say('Aguarde o salvamento terminar antes de fechar.');return}if(dirty&&!confirm('Descartar as alterações da cifra?'))return;epoch++;scroller.stop();dirty=false;if(document.fullscreenElement===overlay)try{await document.exitFullscreen()}catch{}overlay.hidden=true;document.body.classList.remove('chart-reader-open');background.forEach(([x,value])=>x.inert=value);background=[];current=null;returnFocus?.focus();}
-root.LouvorCharts={init:options=>{api=options},open};
+function lock(){if(!overlay)return;epoch++;scroller.stop();overlay.hidden=true;document.body.classList.remove('chart-reader-open');background.forEach(([x,value])=>x.inert=value);background=[];$('chart-sheet').textContent='';$('chart-content').value='';if(document.fullscreenElement===overlay)document.exitFullscreen().catch(()=>{});}
+root.LouvorCharts={init:options=>{api=options},open,lock};
 })(typeof window==='undefined'?globalThis:window);
